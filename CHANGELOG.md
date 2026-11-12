@@ -5,17 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.1] - 2026-11-12
-
-### Fixed
-
-- v12: the model selector collapsed to a few pixels and the context-limit box overflowed the sidebar, because v12 core's `input[type="text"]` rule overrode the module's input sizing. Both inputs are now sized explicitly in the v12 stylesheet.
-
 ## [Unreleased] - 2026-09-14
 
 ### Added
 
-- Foundry VTT v12 support (fork): compatibility sidebar tab built on v12 ApplicationV2, v12 tab button and pop-out, version shims for `renderTemplate`/`loadTemplates`/`buildUuid`, and a v12-only stylesheet. `compatibility.minimum` lowered to 12.
 - queue user messages submitted while the agent is processing: prompts are kept in submission order with a visible queued block, run sequentially after each response, and can be discarded individually or all before they run (Fixes #174)
 
 ### Fixed

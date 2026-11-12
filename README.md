@@ -101,6 +101,13 @@ This fork adds a compatibility layer that is only used on v12:
 build on, and have had less real-world testing than v13/v14. Please report anything that looks or
 behaves wrong on v12 in this repository's [issues](https://github.com/Aegis-plus/simulacrum-foundry-v12/issues).
 
+### Staying up to date with upstream
+
+A daily GitHub Action brings new commits from the [original repository](https://github.com/Daxiongmao87/simulacrum-foundry)
+into this fork, runs the test suite, and publishes a new package. Foundry then offers the update as usual.
+If an upstream change conflicts with the v12 changes, nothing is published and an issue is opened instead.
+Details are in [fork/README.md](fork/README.md); fork-specific changes are listed in [CHANGELOG-v12.md](CHANGELOG-v12.md).
+
 ## Configuration
 
 1. Enable the module in your world

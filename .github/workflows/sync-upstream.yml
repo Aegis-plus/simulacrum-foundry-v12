@@ -1,0 +1,167 @@
+# Keep this fork in step with the original Simulacrum repository.
+#
+# Daily (and on demand): apply new upstream commits, run the test tiers,
+# publish a new package to the `release` branch and push the updated main.
+# If the upstream changes conflict with the v12 changes or the tests fail,
+# nothing is published and an issue labelled `upstream-sync` is opened.
+# See fork/README.md.
+
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: 'Upstream branch or tag to sync (default: ref in fork/upstream.json)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Apply and test only; do not publish or push'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Configure git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898299+github-actions[bot]@users.noreply.github.com'
+
+      - name: Apply upstream changes
+        id: sync
+        env:
+          UPSTREAM_REF: ${{ inputs.upstream_ref }}
+        run: bash tools/fork/sync-upstream.sh
+
+      - name: Decide whether to publish
+        id: plan
+        env:
+          STATUS: ${{ steps.sync.outputs.status }}
+        run: |
+          VERSION=$(node -p "require('./module.json').version")
+          ZIP="simulacrum-$VERSION.zip"
+          PUBLISH=false
+          if [ "$STATUS" = synced ]; then
+            PUBLISH=true
+          elif ! (git fetch --quiet origin release && git ls-tree --name-only FETCH_HEAD | grep -qx "$ZIP"); then
+            # main has a version with no package yet (manual sync or manual version bump)
+            PUBLISH=true
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+          echo "Version $VERSION, publish: $PUBLISH"
+
+      - name: Run tests
+        if: steps.plan.outputs.publish == 'true'
+        run: |
+          for tier in policy static unit component regression package security; do
+            echo "::group::test:$tier"
+            npm run -s "test:$tier"
+            echo "::endgroup::"
+          done
+
+      - name: Commit sync
+        if: steps.sync.outputs.status == 'synced' || steps.sync.outputs.status == 'no-changes'
+        env:
+          PREV: ${{ steps.sync.outputs.previous_commit }}
+          NEW: ${{ steps.sync.outputs.upstream_commit }}
+          VERSION: ${{ steps.sync.outputs.version }}
+        run: |
+          {
+            if [ -n "$VERSION" ]; then
+              echo "chore: sync upstream ${NEW:0:7} (v$VERSION)"
+            else
+              echo "chore: record upstream ${NEW:0:7} (no package changes)"
+            fi
+            echo
+            echo "Upstream Daxiongmao87/simulacrum-foundry ${PREV:0:7}..${NEW:0:7}:"
+            echo
+            git log --format='- %s (%h)' "$PREV..$NEW"
+          } > "$RUNNER_TEMP/message.txt"
+          git commit -q -F "$RUNNER_TEMP/message.txt"
+          git log -1 --stat | head -40
+
+      - name: Build package
+        if: steps.plan.outputs.publish == 'true'
+        id: build
+        run: |
+          rm -rf dist
+          npm run -s package:module
+          echo "zip=dist/simulacrum-${{ steps.plan.outputs.version }}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Publish package to release branch
+        if: steps.plan.outputs.publish == 'true' && !inputs.dry_run
+        run: bash tools/fork/publish-release.sh "${{ steps.build.outputs.zip }}" "${{ steps.plan.outputs.version }}" "${{ steps.sync.outputs.upstream_commit }}"
+
+      - name: Push main
+        if: (steps.sync.outputs.status == 'synced' || steps.sync.outputs.status == 'no-changes') && !inputs.dry_run
+        run: git push origin HEAD:main
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Upstream sync: ${{ steps.sync.outputs.status || 'failed' }}"
+            echo
+            echo "- Upstream commit: \`${{ steps.sync.outputs.upstream_commit }}\`"
+            echo "- Previously synced: \`${{ steps.sync.outputs.previous_commit }}\`"
+            [ "${{ steps.plan.outputs.publish }}" = "true" ] && echo "- Package version: **${{ steps.plan.outputs.version }}**"
+            [ -n "${{ steps.sync.outputs.conflicts }}" ] && echo "- Conflicts: ${{ steps.sync.outputs.conflicts }}"
+            [ "${{ inputs.dry_run }}" = "true" ] && echo "- Dry run: nothing was pushed"
+            true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATUS: ${{ steps.sync.outputs.status }}
+          NEW: ${{ steps.sync.outputs.upstream_commit }}
+          CONFLICTS: ${{ steps.sync.outputs.conflicts }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create upstream-sync --color D93F0B --description 'Automatic upstream sync needs attention' --force
+          {
+            echo "The automatic upstream sync could not publish a new version."
+            echo
+            echo "- Result: \`${STATUS:-error}\`"
+            [ -n "$NEW" ] && echo "- Upstream commit: Daxiongmao87/simulacrum-foundry@$NEW"
+            [ -n "$CONFLICTS" ] && echo "- Conflicting files: \`${CONFLICTS//,/\`, \`}\`"
+            echo "- Run: $RUN_URL"
+            echo
+            echo "Nothing was published; the current release keeps working. See fork/README.md for how to resolve this by hand."
+          } > "$RUNNER_TEMP/issue.md"
+          EXISTING=$(gh issue list --label upstream-sync --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$RUNNER_TEMP/issue.md"
+          else
+            gh issue create --title 'Upstream sync needs attention' --label upstream-sync --body-file "$RUNNER_TEMP/issue.md"
+          fi
