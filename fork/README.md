@@ -23,11 +23,12 @@ The workflow does nothing when upstream has no new commits.
 
 These are never patched from upstream:
 
-| Path                 | Why                                                                                               |
-| -------------------- | ------------------------------------------------------------------------------------------------- |
-| `.github/workflows/` | The fork keeps its own workflows. The Actions token cannot push workflow changes anyway.          |
-| `module.json`        | Rebuilt from upstream's copy plus the fork overlay (links, v12 minimum, v12 stylesheet, version). |
-| `README.md`          | The fork's README. Upstream README changes are not copied.                                        |
+| Path                      | Why                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `.github/workflows/`      | The fork keeps its own workflows. The Actions token cannot push workflow changes anyway.          |
+| `module.json`             | Rebuilt from upstream's copy plus the fork overlay (links, v12 minimum, v12 stylesheet, version). |
+| `README.md`               | The fork's README. Upstream README changes are not copied.                                        |
+| `packs/simulacrum-tools/` | Built compendium (binary). Rebuilt from `packs/_source/` whenever upstream changes either.        |
 
 All other files, including the v12 compatibility code, are patched with a 3-way merge.
 

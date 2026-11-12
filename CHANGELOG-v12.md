@@ -3,6 +3,16 @@
 Changes specific to this fork. Upstream changes are listed in [CHANGELOG.md](CHANGELOG.md);
 the automatic upstream sync brings them in (see [fork/README.md](fork/README.md)).
 
+## [1.1.2] - 2026-11-12
+
+### Fixed
+
+- The "Grunk Benchmark" macro in the Simulacrum Tools compendium had `author: "simulacrum"`, which is not a valid user ID, so Foundry logged `author: must be a valid 16-character alphanumeric ID` when loading the compendium. The author is now unset (`null`).
+
+### Changed
+
+- The upstream sync rebuilds the compendium from `packs/_source` instead of patching the binary LevelDB files.
+
 ## [1.1.1] - 2026-11-12
 
 ### Fixed
