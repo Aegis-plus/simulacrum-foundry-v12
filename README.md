@@ -1,18 +1,16 @@
-# Simulacrum: AI Campaign Copilot
+# Simulacrum: AI Campaign Copilot (Foundry VTT v12 build)
 
 <p align="center">
-  <a href="https://foundryvtt.com/packages/simulacrum"><img src="https://img.shields.io/badge/FoundryVTT-Install%20Package-e67e22?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFjSURBVDhPYxgFxAAmJqb/QBo5jBQAygQpRQb4NMI0wTUyMDD8h9JYMYpGmCYGJiamB1A5OI0kDQE0jQxAza+gNFwzugagRmagxgdQ6QdQjf+hGv8zMzM/gEojawRqegCl/zMxMT2AaQTRf5mYGB4wMjLeB2kA0f+Zn0JNAND/mR9C7YJphNFQDf+ZgZoeMDExPGBkYrgPchLIJJC9IAwEQP4TcCBI439mpvtQOxjugzTCNMJoEAbRQLX3mZiYQE4FagQFEchJYA0wTQgMchKS5vtY5SGGwjXCaKgmkPP+A8kHUI0PYHYxMTHch2nEhmEa/zM/hWq6z/AQ6lSYRhAN1YgLIzT+Z4Y67T/I5UB9D0Ca/sPcCKOhGmGy+DXCNLhBnXafgenZfZBGsJP+g5yKYi8DTDMjE9N/qBQ8bqAqYXpxarxPTDiD8qCMIBmkBlU1UhpGayQmjJE1wjSgJAgGBgCmJJx6XoJdXwAAAABJRU5ErkJggg==" alt="Install on FoundryVTT"></a>
-  <a href="https://discord.gg/VSs8jZBgmP"><img src="https://img.shields.io/discord/1466476707522543742?style=for-the-badge&logo=discord&logoColor=white&label=Discord&color=5865F2" alt="Discord"></a>
-  <a href="https://buymeacoffee.com/daxiongmao87"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow?style=for-the-badge&logo=buymeacoffee" alt="Buy Me a Coffee"></a>
+  <a href="https://github.com/Aegis-plus/simulacrum-foundry-v12/releases/latest"><img src="https://img.shields.io/github/v/release/Aegis-plus/simulacrum-foundry-v12" alt="Latest Release"></a>
+  <a href="https://github.com/Aegis-plus/simulacrum-foundry-v12/releases"><img src="https://img.shields.io/github/downloads/Aegis-plus/simulacrum-foundry-v12/total?logo=GitHub" alt="GitHub Downloads"></a>
+  <img src="https://img.shields.io/badge/Foundry-v12%20%7C%20v13%20%7C%20v14-e67e22" alt="Foundry v12 | v13 | v14">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Aegis-plus/simulacrum-foundry-v12" alt="License"></a>
 </p>
 
-<p align="center">
-  <a href="https://foundryvtt.com/"><img src="https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/Daxiongmao87/simulacrum-foundry/releases/latest/download/module.json" alt="Foundry Version"></a>
-  <a href="https://forge-vtt.com/bazaar#package=simulacrum"><img src="https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https://forge-vtt.com/api/bazaar/package/simulacrum&colorB=4aa94a" alt="Forge Installs"></a>
-  <a href="https://github.com/Daxiongmao87/simulacrum-foundry/releases"><img src="https://img.shields.io/github/downloads/Daxiongmao87/simulacrum-foundry/total?logo=GitHub" alt="GitHub Downloads"></a>
-  <a href="https://github.com/Daxiongmao87/simulacrum-foundry/releases/latest"><img src="https://img.shields.io/github/v/release/Daxiongmao87/simulacrum-foundry" alt="Latest Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Daxiongmao87/simulacrum-foundry" alt="License"></a>
-</p>
+> [!NOTE]
+> This is a community fork of [Simulacrum](https://github.com/Daxiongmao87/simulacrum-foundry) by [Daxiongmao87](https://github.com/Daxiongmao87)
+> that adds **Foundry VTT v12** support. The upstream module requires v13 or newer.
+> v13 and v14 keep working exactly as upstream. See [Foundry v12 support](#foundry-v12-support) below.
 
 An AI-powered Campaign Copilot for [Foundry Virtual Tabletop](https://foundryvtt.com/) that helps Game Masters manage their campaigns through natural language conversation.
 
@@ -65,16 +63,44 @@ Simulacrum is restricted to Game Masters only—players cannot access the AI int
 
 ## Installation
 
-### From Foundry VTT
+> [!IMPORTANT]
+> Searching for "Simulacrum" in Foundry's **Install Module** dialog installs the upstream module,
+> which does not run on v12. Use the manifest URL below to install this build.
+
+### Manifest URL (recommended)
 1. Open Foundry VTT and navigate to **Add-on Modules**
 2. Click **Install Module**
-3. Search for "Simulacrum"
-4. Click **Install**
+3. Paste this into the **Manifest URL** field and click **Install**:
+   ```
+   https://github.com/Aegis-plus/simulacrum-foundry-v12/releases/latest/download/module.json
+   ```
+
+This build uses the same module id (`simulacrum`) as upstream, so it replaces an existing
+Simulacrum install rather than sitting alongside it.
 
 ### Manual Installation
-1. Download the latest release from [GitHub Releases](https://github.com/Daxiongmao87/simulacrum-foundry/releases)
-2. Extract to your `Data/modules/` directory
+1. Download `simulacrum.zip` from the latest [GitHub Release](https://github.com/Aegis-plus/simulacrum-foundry-v12/releases)
+2. Extract it to your `Data/modules/simulacrum/` directory
 3. Restart Foundry VTT
+
+## Foundry v12 support
+
+Upstream Simulacrum builds its sidebar on v13's `AbstractSidebarTab`, which does not exist in v12.
+This fork adds a compatibility layer that is only used on v12:
+
+- **Sidebar tab:** `scripts/ui/legacy-sidebar-tab.js` provides the parts of v13's sidebar tab API the
+  chat panel needs, built on v12's ApplicationV2. On v12 the Simulacrum button is added to the sidebar
+  just before Settings (GMs only).
+- **Pop-out:** right-click the Simulacrum tab button (or click it while the sidebar is collapsed) to open
+  the panel in its own window, like the built-in v12 tabs.
+- **API shims:** `scripts/utils/foundry-compat.js` resolves `renderTemplate`, `loadTemplates` and
+  `buildUuid` for each core version.
+- **Styling:** `styles/simulacrum-legacy.css` supplies the chat-panel layout v13 core provides. All of its
+  rules are scoped to the v12 tab, so v13/v14 are unaffected.
+
+**Known limitations on v12:** the v12 layout and styling were written without v13's core chat styles to
+build on, and have had less real-world testing than v13/v14. Please report anything that looks or
+behaves wrong on v12 in this repository's [issues](https://github.com/Aegis-plus/simulacrum-foundry-v12/issues).
 
 ## Configuration
 
@@ -147,7 +173,7 @@ For advanced users, Simulacrum can execute arbitrary JavaScript, enabling comple
 
 ## Requirements
 
-- Foundry VTT v12 or higher (v12, v13 and v14 supported)
+- Foundry VTT v12, v13 or v14
 - An OpenAI-compatible API endpoint with **tool/function calling support**
 
 > [!IMPORTANT]
@@ -201,9 +227,10 @@ Not sure if your model supports tools? Check these resources:
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/Daxiongmao87/simulacrum-foundry/issues)
-- **Source**: [GitHub Repository](https://github.com/Daxiongmao87/simulacrum-foundry)
-- **Donate**: [Buy Me a Coffee](https://buymeacoffee.com/daxiongmao87)
+- **v12 issues**: [Issues for this fork](https://github.com/Aegis-plus/simulacrum-foundry-v12/issues)
+- **Everything else**: [Upstream issues](https://github.com/Daxiongmao87/simulacrum-foundry/issues) and the upstream [Discord](https://discord.gg/VSs8jZBgmP)
+- **Source**: [This fork](https://github.com/Aegis-plus/simulacrum-foundry-v12) · [Upstream](https://github.com/Daxiongmao87/simulacrum-foundry)
+- **Support the original author**: [Buy Me a Coffee](https://buymeacoffee.com/daxiongmao87)
 
 ## License
 
@@ -211,4 +238,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Credits
 
-Created by [Daxiongmao87](https://github.com/Daxiongmao87)
+Simulacrum was created by [Daxiongmao87](https://github.com/Daxiongmao87).
+Foundry VTT v12 compatibility by [Aegis-plus](https://github.com/Aegis-plus).
