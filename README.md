@@ -78,7 +78,7 @@ This build uses the same module id (`simulacrum`) as upstream, so it replaces an
 Simulacrum install rather than sitting alongside it.
 
 ### Manual Installation
-1. Download [`simulacrum-1.1.0.zip`](https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/release/simulacrum-1.1.0.zip) (built packages live on the [`release` branch](https://github.com/Aegis-plus/simulacrum-foundry-v12/tree/release))
+1. Download [`simulacrum-1.1.1.zip`](https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/release/simulacrum-1.1.1.zip) (built packages live on the [`release` branch](https://github.com/Aegis-plus/simulacrum-foundry-v12/tree/release))
 2. Extract it to your `Data/modules/simulacrum/` directory
 3. Restart Foundry VTT
 

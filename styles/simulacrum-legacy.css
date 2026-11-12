@@ -181,9 +181,58 @@
   border-radius: 50%;
 }
 
-.simulacrum-legacy-sidebar .model-selector-input,
-.simulacrum-legacy-sidebar .context-limit-input {
+/* v12 core styles every `input[type='text']` (width: calc(100% - 2px), light
+   background, dark text). That selector is more specific than the module's
+   single-class rules, so without these overrides the context-limit box takes
+   the whole row and the model selector collapses to ~20px. */
+.simulacrum-legacy-sidebar .model-selector-wrapper {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.simulacrum-legacy-sidebar input.model-selector-input,
+.simulacrum-legacy-sidebar input.context-limit-input {
   height: 26px;
+  margin: 0;
+  border: 1px solid #4b4a45;
+  border-radius: 3px;
+  background: #1a1625;
+  color: #fff4c2;
+  font-size: 12px;
+  line-height: normal;
+  box-sizing: border-box;
+}
+
+.simulacrum-legacy-sidebar input.model-selector-input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 2px 24px 2px 6px;
+  text-align: left;
+}
+
+.simulacrum-legacy-sidebar input.context-limit-input {
+  flex: 0 0 56px;
+  width: 56px;
+  min-width: 56px;
+  padding: 2px 4px;
+  text-align: center;
+}
+
+.simulacrum-legacy-sidebar input.model-selector-input:focus,
+.simulacrum-legacy-sidebar input.context-limit-input:focus {
+  border-color: #daa520;
+  box-shadow: 0 0 4px rgba(218, 165, 32, 0.3);
+}
+
+.simulacrum-legacy-sidebar input.model-selector-input::placeholder,
+.simulacrum-legacy-sidebar input.context-limit-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.simulacrum-legacy-sidebar .model-dropdown li {
+  font-size: 12px;
 }
 
 .simulacrum-legacy-sidebar #simulacrum-chat-message,
