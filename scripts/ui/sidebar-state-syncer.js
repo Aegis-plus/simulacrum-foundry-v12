@@ -97,10 +97,19 @@ function isCorrectionMessage(message) {
   );
 }
 
+/** An assistant turn with no text whose only tool calls render nothing (e.g. a bare end_loop). */
+function isEmptyHiddenToolTurn(message) {
+  if (message.role !== 'assistant') return false;
+  if (typeof message.content === 'string' && message.content.trim().length > 0) return false;
+  const calls = Array.isArray(message.tool_calls) ? message.tool_calls : [];
+  return calls.every(call => HIDDEN_TOOL_NAMES.has(getToolCallName(call)));
+}
+
 function isDisplayableMessage(message) {
   if (!message) return false;
   if (!DISPLAY_ROLES.has(message.role)) return false;
   if (message._internal === true) return false;
+  if (isEmptyHiddenToolTurn(message)) return false;
   return !isCorrectionMessage(message);
 }
 

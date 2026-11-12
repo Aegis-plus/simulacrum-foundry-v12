@@ -25,6 +25,13 @@ import {
 import { emitProcessStatus, emitRetryStatus, SimulacrumHooks } from './hook-manager.js';
 import { interactionLogger } from './interaction-logger.js';
 import { executeToolCalls, storeToolJustification } from './tool-execution.js';
+import {
+  hasVisibleToolCalls,
+  isSilentEndLoop,
+  SILENT_END_LOOP_CORRECTION,
+  SILENT_END_LOOP_FALLBACK_NOTICE,
+  SILENT_END_LOOP_RETRY_LIMIT,
+} from './silent-end-loop.js';
 // Re-export for existing importers (chat-handler); the store lives in tool-execution.js.
 export { retrieveToolJustification } from './tool-execution.js';
 
@@ -164,10 +171,12 @@ async function _runLoopIteration(context) {
     // We must ensure an assistant message bubble exists even if content is empty (pure tool call)
     // otherwise the pending tool card will attach to the *previous* assistant message (floating bug).
     const hasContent = currentResponse.content && currentResponse.content.trim().length > 0;
-    const hasTools =
-      Array.isArray(currentResponse.toolCalls) && currentResponse.toolCalls.length > 0;
+    // Only tools that render a card need an anchor bubble; a bare end_loop/manage_task
+    // with no text would otherwise leave an empty assistant bubble in the chat.
+    const hasVisibleTools = hasVisibleToolCalls(currentResponse.toolCalls);
+    if (hasContent || hasVisibleTools) context.visibleOutputEmitted = true;
 
-    if (hasContent || hasTools) {
+    if (hasContent || hasVisibleTools) {
       await _notifyAssistantMessage(currentResponse, context);
     }
 
@@ -378,17 +387,7 @@ You cannot respond without a tool call. Either continue with the next tool in yo
     r => r.result?._endLoop === true || r.result?.data?._endLoop === true
   );
   if (endLoopResult) {
-    if (isDebugEnabled()) logger.debug('end_loop tool detected; terminating loop');
-
-    // Auto-close task tracker if manage_task has an active task
-    const manageTaskTool = toolRegistry.getTool('manage_task');
-    if (manageTaskTool?.currentTask) {
-      if (isDebugEnabled()) logger.debug('end_loop: closing orphaned task tracker');
-      Hooks.callAll(SimulacrumHooks.TASK_FINISHED);
-      manageTaskTool.currentTask = null;
-    }
-
-    return { action: 'break', reason: 'end_loop' };
+    return _handleEndLoop(currentResponse, context, { repeatCount, toolFailureAttempts });
   }
 
   // 6. Legacy Mode Notification
@@ -684,6 +683,64 @@ function _extractToolResponse(toolCalls) {
 
   // Join multiple responses with newlines
   return responses.join('\n\n');
+}
+
+/**
+ * The model called end_loop: end the loop, unless it left the user nothing to
+ * read, in which case it is sent back to write its message.
+ */
+async function _handleEndLoop(currentResponse, context, { repeatCount, toolFailureAttempts }) {
+  const silentEnd = await _handleSilentEndLoop(currentResponse, context);
+  if (silentEnd) {
+    return { action: 'continue', response: silentEnd, repeatCount, toolFailureAttempts };
+  }
+
+  if (isDebugEnabled()) logger.debug('end_loop tool detected; terminating loop');
+
+  // Auto-close task tracker if manage_task has an active task
+  const manageTaskTool = toolRegistry.getTool('manage_task');
+  if (manageTaskTool?.currentTask) {
+    if (isDebugEnabled()) logger.debug('end_loop: closing orphaned task tracker');
+    Hooks.callAll(SimulacrumHooks.TASK_FINISHED);
+    manageTaskTool.currentTask = null;
+  }
+
+  return { action: 'break', reason: 'end_loop' };
+}
+
+/**
+ * end_loop with nothing for the user to read: send the model back to write the
+ * message (up to SILENT_END_LOOP_RETRY_LIMIT times), then show a notice instead
+ * of an empty reply.
+ * @returns {Promise<object|null>} The next AI response to continue with, or null to end the loop
+ */
+async function _handleSilentEndLoop(response, context) {
+  const silent = isSilentEndLoop({
+    content: response.content,
+    toolCalls: response.toolCalls,
+    visibleOutputEmitted: context.visibleOutputEmitted === true,
+  });
+  if (!silent) return null;
+
+  const attempts = context.silentEndLoopRetries ?? 0;
+  if (attempts >= SILENT_END_LOOP_RETRY_LIMIT) {
+    logger.warn('Model ended the loop without a message after retries; showing a notice');
+    await context.onToolResult?.({
+      role: 'assistant',
+      content: SILENT_END_LOOP_FALLBACK_NOTICE,
+      _fromToolLoop: true,
+    });
+    return null;
+  }
+
+  context.silentEndLoopRetries = attempts + 1;
+  context.conversationManager.addMessage('developer', SILENT_END_LOOP_CORRECTION);
+  await context.conversationManager.save();
+  interactionLogger.logLoopEvent(context.loopId, 'continuation_requested', {
+    reason: 'silent_end_loop',
+    attempt: attempts + 1,
+  });
+  return _getNextAIResponse([], context);
 }
 
 async function _notifyAssistantMessage(response, context) {

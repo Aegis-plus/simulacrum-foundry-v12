@@ -3,6 +3,12 @@
 Changes specific to this fork. Upstream changes are listed in [CHANGELOG.md](CHANGELOG.md);
 the automatic upstream sync brings them in (see [fork/README.md](fork/README.md)).
 
+## [1.1.3] - 2026-11-12
+
+### Fixed
+
+- Empty replies: when the model ended its turn with `end_loop` (for example to ask clarifying questions) but put no message in its reply or in end_loop's `response`, the chat showed an empty bubble and the questions were lost. The agent is now sent back to write the message (up to twice), and if it still sends nothing a short notice is shown instead of an empty reply. Empty end_loop-only turns are also hidden when the conversation is reloaded. This also happens on v13/v14 upstream.
+
 ## [1.1.2] - 2026-11-12
 
 ### Fixed
