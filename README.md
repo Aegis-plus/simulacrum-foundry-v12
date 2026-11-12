@@ -1,8 +1,7 @@
 # Simulacrum: AI Campaign Copilot (Foundry VTT v12 build)
 
 <p align="center">
-  <a href="https://github.com/Aegis-plus/simulacrum-foundry-v12/releases/latest"><img src="https://img.shields.io/github/v/release/Aegis-plus/simulacrum-foundry-v12" alt="Latest Release"></a>
-  <a href="https://github.com/Aegis-plus/simulacrum-foundry-v12/releases"><img src="https://img.shields.io/github/downloads/Aegis-plus/simulacrum-foundry-v12/total?logo=GitHub" alt="GitHub Downloads"></a>
+  <img src="https://img.shields.io/badge/dynamic/json?label=version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2FAegis-plus%2Fsimulacrum-foundry-v12%2Fmain%2Fmodule.json" alt="Version">
   <img src="https://img.shields.io/badge/Foundry-v12%20%7C%20v13%20%7C%20v14-e67e22" alt="Foundry v12 | v13 | v14">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Aegis-plus/simulacrum-foundry-v12" alt="License"></a>
 </p>
@@ -72,14 +71,14 @@ Simulacrum is restricted to Game Masters only—players cannot access the AI int
 2. Click **Install Module**
 3. Paste this into the **Manifest URL** field and click **Install**:
    ```
-   https://github.com/Aegis-plus/simulacrum-foundry-v12/releases/latest/download/module.json
+   https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/main/module.json
    ```
 
 This build uses the same module id (`simulacrum`) as upstream, so it replaces an existing
 Simulacrum install rather than sitting alongside it.
 
 ### Manual Installation
-1. Download `simulacrum.zip` from the latest [GitHub Release](https://github.com/Aegis-plus/simulacrum-foundry-v12/releases)
+1. Download [`simulacrum-1.1.0.zip`](https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/release/simulacrum-1.1.0.zip) (built packages live on the [`release` branch](https://github.com/Aegis-plus/simulacrum-foundry-v12/tree/release))
 2. Extract it to your `Data/modules/simulacrum/` directory
 3. Restart Foundry VTT
 
