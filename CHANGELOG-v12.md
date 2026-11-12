@@ -3,6 +3,13 @@
 Changes specific to this fork. Upstream changes are listed in [CHANGELOG.md](CHANGELOG.md);
 the automatic upstream sync brings them in (see [fork/README.md](fork/README.md)).
 
+## [1.1.4] - 2026-11-12
+
+### Fixed
+
+- v12: the task/plan tracker at the top of the chat grew to fill half the panel, hid the task title, and showed a full-width expand button with a red hover outline. v12 core's `.flexcol > * { flex: 1 }` and `button { width: 100% }` rules were overriding it; the tracker now sizes to its content.
+- v12: the tool permission buttons (Allow / Deny / Always Allow / Never) were stacked full-width; they are back to a two-per-row layout.
+
 ## [1.1.3] - 2026-11-12
 
 ### Fixed

@@ -250,3 +250,61 @@
   border-color: #daa520;
   box-shadow: 0 0 4px rgba(218, 165, 32, 0.3);
 }
+
+/* ---------------------------------------- */
+/*  Task tracker                            */
+/* ---------------------------------------- */
+
+/* v12 core gives every `.flexcol > *` flex: 1, so the tracker grew to share
+   the panel height with the chat log. Size it to its content. */
+.simulacrum-legacy-sidebar .task-tracker {
+  flex: none;
+  width: auto;
+  margin: 0;
+  border-radius: 4px;
+}
+
+/* v12 core styles every <button> (width: 100%, line-height: 28px, light
+   background, hover glow); the toggle took the whole header row and squeezed
+   the task title to zero width. */
+.simulacrum-legacy-sidebar .task-tracker-header button.task-tracker-toggle {
+  flex: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.25rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+}
+
+.simulacrum-legacy-sidebar .task-tracker-header button.task-tracker-toggle > i {
+  margin: 0;
+}
+
+.simulacrum-legacy-sidebar .task-tracker-header .task-tracker-title {
+  font-size: var(--font-size-14, 14px);
+}
+
+.simulacrum-legacy-sidebar .task-tracker-body .task-tracker-goal {
+  margin: 0 0 0.5rem;
+}
+
+/* ---------------------------------------- */
+/*  Tool confirmation buttons               */
+/* ---------------------------------------- */
+
+/* v12 core's `button { width: 100%; margin: 0 1px; line-height: 28px }` stacked
+   the four permission buttons full-width; let them share rows again. */
+.simulacrum-legacy-sidebar .simulacrum-tool-confirmation button.confirm-btn {
+  width: auto;
+  margin: 0;
+  line-height: normal;
+  flex: 1 1 calc(50% - 0.25rem);
+}
+
+.simulacrum-legacy-sidebar .simulacrum-tool-confirmation button.confirm-btn > i {
+  margin: 0;
+}
