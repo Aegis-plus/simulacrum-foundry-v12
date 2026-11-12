@@ -147,7 +147,7 @@ For advanced users, Simulacrum can execute arbitrary JavaScript, enabling comple
 
 ## Requirements
 
-- Foundry VTT v13.0.0 or higher
+- Foundry VTT v12 or higher (v12, v13 and v14 supported)
 - An OpenAI-compatible API endpoint with **tool/function calling support**
 
 > [!IMPORTANT]

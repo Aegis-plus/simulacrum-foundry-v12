@@ -1,0 +1,203 @@
+/* SPDX-License-Identifier: MIT */
+
+/*
+ * Foundry VTT v12 sidebar support.
+ *
+ * On v13+ the Simulacrum tab inherits its layout from core's ApplicationV2
+ * chat sidebar styles. v12's sidebar is Application v1 and has no styling for
+ * `.chat-scroll` / `.chat-form` / `.ui-control`, so this sheet supplies it.
+ * Every rule is scoped to `.simulacrum-legacy-sidebar` (added only by
+ * scripts/ui/legacy-sidebar-tab.js on v12) or to the injected v12 tab button,
+ * so nothing here applies on v13+.
+ */
+
+/* ---------------------------------------- */
+/*  Tab button (v12 #sidebar-tabs > a.item) */
+/* ---------------------------------------- */
+
+#sidebar-tabs > .item[data-tab='simulacrum'] {
+  color: #fff4c2;
+  text-shadow: 0 0 5px rgba(218, 165, 32, 0.5);
+}
+
+#sidebar-tabs > .item[data-tab='simulacrum'].active {
+  text-shadow: 0 0 8px rgba(218, 165, 32, 0.8);
+}
+
+#sidebar-tabs > .item[data-tab='simulacrum'].simulacrum-endpoint-error {
+  opacity: 0.7;
+}
+
+/* ---------------------------------------- */
+/*  Tab container visibility & layout       */
+/* ---------------------------------------- */
+
+/* Beats the generic `#simulacrum { display: flex }` rule so the v1 Tabs
+   controller's `.active` class decides visibility. */
+#sidebar > #simulacrum.simulacrum-legacy-sidebar {
+  display: none;
+}
+
+#sidebar > #simulacrum.simulacrum-legacy-sidebar.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-items: stretch;
+  gap: 6px;
+  height: calc(100% - var(--sidebar-header-height, 32px) - 6px);
+  min-height: 0;
+  padding: 0 4px 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#sidebar.collapsed > #simulacrum.simulacrum-legacy-sidebar {
+  display: none;
+}
+
+/* Pop-out window (framed ApplicationV2) */
+.simulacrum-legacy-sidebar.sidebar-popout > .window-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  overflow: hidden;
+  background: #0b0a13 url('../../../ui/denim075.png') repeat;
+}
+
+/* ---------------------------------------- */
+/*  Chat log                                */
+/* ---------------------------------------- */
+
+.simulacrum-legacy-sidebar .hidden,
+.simulacrum-legacy-sidebar [hidden] {
+  display: none !important;
+}
+
+.simulacrum-legacy-sidebar .chat-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.simulacrum-legacy-sidebar .chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0 2px;
+  list-style: none;
+}
+
+.simulacrum-legacy-sidebar .chat-message {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.4;
+}
+
+.simulacrum-legacy-sidebar .chat-message .message-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 4px;
+  line-height: 20px;
+}
+
+.simulacrum-legacy-sidebar .chat-message .message-sender {
+  flex: 1;
+  margin: 0;
+  border: none;
+  overflow: hidden;
+  font-size: var(--font-size-14, 14px);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.simulacrum-legacy-sidebar .chat-message .message-metadata {
+  flex: none;
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.8;
+}
+
+.simulacrum-legacy-sidebar .chat-message .message-content {
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------- */
+/*  Input form                              */
+/* ---------------------------------------- */
+
+.simulacrum-legacy-sidebar .chat-form {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.simulacrum-legacy-sidebar .chat-controls {
+  display: flex;
+  align-items: center;
+}
+
+.simulacrum-legacy-sidebar .chat-controls .control-buttons {
+  flex: 1;
+  min-width: 0;
+}
+
+.simulacrum-legacy-sidebar .ui-control {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4b4a45;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff4c2;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.simulacrum-legacy-sidebar .ui-control:hover {
+  border-color: #daa520;
+  box-shadow: 0 0 5px rgba(218, 165, 32, 0.3);
+}
+
+.simulacrum-legacy-sidebar .jump-to-bottom {
+  position: absolute;
+  top: -36px;
+  right: 8px;
+  z-index: 2;
+  border-radius: 50%;
+}
+
+.simulacrum-legacy-sidebar .model-selector-input,
+.simulacrum-legacy-sidebar .context-limit-input {
+  height: 26px;
+}
+
+.simulacrum-legacy-sidebar #simulacrum-chat-message,
+.simulacrum-legacy-sidebar .chat-input {
+  height: 90px;
+  min-height: 60px;
+  border: 1px solid #4b4a45;
+  border-radius: 4px;
+  background: #1a1625;
+  color: #fff4c2;
+  box-sizing: border-box;
+}
+
+.simulacrum-legacy-sidebar #simulacrum-chat-message:focus {
+  border-color: #daa520;
+  box-shadow: 0 0 4px rgba(218, 165, 32, 0.3);
+}

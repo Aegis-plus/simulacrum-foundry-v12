@@ -1,6 +1,6 @@
 /**
  * Simulacrum Sidebar Tab - ApplicationV2-based sidebar tab for AI interaction
- * Replaces the panel interface with a proper FoundryVTT v13 sidebar integration
+ * Native AbstractSidebarTab on FoundryVTT v13+, LegacySidebarTab shim on v12
  */
 
 /* eslint-disable max-lines */
@@ -18,10 +18,11 @@ import { formatPendingToolCall, formatToolCallDisplay } from '../utils/message-u
 import { emitProcessCancelled, SimulacrumHooks } from '../core/hook-manager.js';
 import { SequentialQueue } from '../utils/sequential-queue.js';
 import { SidebarMessageQueue } from './sidebar-message-queue.js';
+import { LegacySidebarTab } from './legacy-sidebar-tab.js';
+import { getActiveSidebarTab, renderTemplate } from '../utils/foundry-compat.js';
 
-// Stable base class resolution for FoundryVTT v13 with fallback safety
-const AbstractSidebarTab =
-  foundry?.applications?.sidebar?.AbstractSidebarTab ?? globalThis.AbstractSidebarTab;
+// v13+: core AbstractSidebarTab. v12: ApplicationV2-based shim with the same surface.
+const AbstractSidebarTab = foundry?.applications?.sidebar?.AbstractSidebarTab ?? LegacySidebarTab;
 const HandlebarsApplicationMixin =
   foundry?.applications?.api?.HandlebarsApplicationMixin ?? globalThis.HandlebarsApplicationMixin;
 
@@ -437,11 +438,8 @@ export class SimulacrumSidebarTab extends HandlebarsApplicationMixin(AbstractSid
 
   /** Inline sidebar input is hidden while a popout is rendered. */
   _isSidebarInputDisabled() {
-    return (
-      !this.isPopout &&
-      !!ui.sidebar.popouts[this.constructor.tabName]?.rendered &&
-      !this._popoutClosing
-    );
+    const popout = ui.sidebar?.popouts?.[this.constructor.tabName] ?? this.popout;
+    return !this.isPopout && !!popout?.rendered && !this._popoutClosing;
   }
 
   /**
@@ -577,7 +575,7 @@ export class SimulacrumSidebarTab extends HandlebarsApplicationMixin(AbstractSid
   async _postRender(_context, options) {
     // Only attempt scroll if the tab is currently active. If not active, scrolling a hidden
     // element will fail silently. Keep #needsScroll = true so _onActivate can try again.
-    const isTabActive = ui.sidebar?.tabGroups?.primary === this.constructor.tabName;
+    const isTabActive = getActiveSidebarTab() === this.constructor.tabName;
 
     if (this.#needsScroll || options.isFirstRender) {
       if (isTabActive) {
@@ -784,7 +782,7 @@ export class SimulacrumSidebarTab extends HandlebarsApplicationMixin(AbstractSid
     this.messages.push(msg);
 
     const templatePath = 'modules/simulacrum/templates/simulacrum/message.hbs';
-    const html = await foundry.applications.handlebars.renderTemplate(templatePath, msg);
+    const html = await renderTemplate(templatePath, msg);
 
     const chatScroll =
       this.element?.[0]?.querySelector('.chat-scroll') ||
@@ -1078,7 +1076,7 @@ export class SimulacrumSidebarTab extends HandlebarsApplicationMixin(AbstractSid
 
     // Render the confirmation template
     const templatePath = 'modules/simulacrum/templates/simulacrum/tool-confirmation.hbs';
-    const html = await foundry.applications.handlebars.renderTemplate(templatePath, {
+    const html = await renderTemplate(templatePath, {
       toolName,
       toolCallId,
       displayName,

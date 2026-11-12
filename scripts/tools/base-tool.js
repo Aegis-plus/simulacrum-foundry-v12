@@ -7,6 +7,7 @@
 import { SimulacrumError } from '../utils/errors.js';
 import { ValidationUtils } from '../utils/validation.js';
 import { createLogger } from '../utils/logger.js';
+import { buildUuid } from '../utils/foundry-compat.js';
 
 /**
  * Base tool that all other tools extend from
@@ -263,7 +264,7 @@ export class BaseTool {
   /**
    * Validate and correct UUID references in data using the document schema.
    * Scans for ForeignDocumentField entries, checks values, and rebuilds
-   * malformed UUIDs via foundry.utils.buildUuid. Modifies data in place.
+   * malformed UUIDs via buildUuid (foundry-compat). Modifies data in place.
    * @param {string} documentType - The parent document type (e.g. 'Actor')
    * @param {Object} data - Data to validate (modified in place)
    * @param {string} [pack] - Compendium pack key if applicable
@@ -326,7 +327,7 @@ export class BaseTool {
     const rawId = BaseTool.extractRawId(value);
 
     try {
-      const corrected = foundry.utils.buildUuid({ documentName, id: rawId, pack });
+      const corrected = buildUuid({ documentName, id: rawId, pack });
       if (corrected && corrected !== value) {
         parentObj[key] = corrected;
         warnings.push(`Corrected UUID for '${fullPath}': '${value}' → '${corrected}'`);

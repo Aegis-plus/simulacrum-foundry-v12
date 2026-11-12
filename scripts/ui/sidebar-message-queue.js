@@ -1,6 +1,7 @@
 import { MessageQueueManager } from './message-queue.js';
 import { SidebarEventHandlers } from './sidebar-event-handlers.js';
 import { SimulacrumHooks } from '../core/hook-manager.js';
+import { renderTemplate } from '../utils/foundry-compat.js';
 
 /**
  * Message-queue wiring for the sidebar tab (#174): owns the MessageQueueManager
@@ -13,7 +14,7 @@ export class SidebarMessageQueue {
   constructor(app) {
     this.app = app;
     this.messageQueue = new MessageQueueManager({
-      renderTemplate: (path, ctx) => foundry.applications.handlebars.renderTemplate(path, ctx),
+      renderTemplate: (path, ctx) => renderTemplate(path, ctx),
       appendTo: html => this._appendMessageQueueToLog(html),
     });
     this.messageQueue.attach(app, SidebarEventHandlers.handleSendMessage);
