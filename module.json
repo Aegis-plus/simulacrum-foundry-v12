@@ -1,0 +1,65 @@
+{
+  "id": "simulacrum",
+  "title": "Simulacrum: AI Campaign Copilot",
+  "description": "<p>An AI-powered Campaign Copilot for Foundry Virtual Tabletop that helps Game Masters manage their campaigns through natural language conversation.</p><p><strong>This is the Foundry VTT v12 build</strong>, a community fork of <a href=\"https://github.com/Daxiongmao87/simulacrum-foundry\">Simulacrum</a> by Daxiongmao87 that adds v12 support. v13 and v14 behave exactly as upstream.</p><ul><li>Create, read, update, search and delete documents through chat</li><li>Compendium, asset search, schema introspection, macro and JavaScript tools</li><li>Confirmation and per-tool permissions for destructive operations</li><li>Any OpenAI-compatible endpoint with tool calling (OpenAI, Gemini, OpenRouter, Ollama, LM Studio, ...)</li><li>GM-only access</li></ul><p>See the <a href=\"https://github.com/Aegis-plus/simulacrum-foundry-v12#readme\">README</a> for setup and model recommendations.</p>",
+  "authors": [
+    {
+      "name": "Daxiongmao87",
+      "url": "https://github.com/Daxiongmao87"
+    },
+    {
+      "name": "Aegis-plus",
+      "url": "https://github.com/Aegis-plus"
+    }
+  ],
+  "version": "1.1.4",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14"
+  },
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "conflicts": [],
+    "flags": {}
+  },
+  "esmodules": ["scripts/simulacrum.js"],
+  "styles": ["styles/simulacrum.css", "styles/simulacrum-legacy.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "packs": [
+    {
+      "name": "simulacrum-tools",
+      "label": "Simulacrum Tools",
+      "path": "packs/simulacrum-tools",
+      "type": "Macro",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OBSERVER"
+      }
+    }
+  ],
+  "socket": false,
+  "manifest": "https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/main/module.json",
+  "download": "https://raw.githubusercontent.com/Aegis-plus/simulacrum-foundry-v12/release/simulacrum-1.1.4.zip",
+  "url": "https://github.com/Aegis-plus/simulacrum-foundry-v12",
+  "bugs": "https://github.com/Aegis-plus/simulacrum-foundry-v12/issues",
+  "changelog": "https://github.com/Aegis-plus/simulacrum-foundry-v12/blob/main/CHANGELOG-v12.md",
+  "readme": "https://github.com/Aegis-plus/simulacrum-foundry-v12/blob/main/README.md",
+  "license": "https://github.com/Aegis-plus/simulacrum-foundry-v12/blob/main/LICENSE",
+  "media": [
+    {
+      "type": "icon",
+      "url": "https://github.com/Aegis-plus/simulacrum-foundry-v12/raw/main/media/icon.png"
+    },
+    {
+      "type": "cover",
+      "url": "https://github.com/Aegis-plus/simulacrum-foundry-v12/raw/main/media/cover.png"
+    }
+  ]
+}
