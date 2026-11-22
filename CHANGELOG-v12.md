@@ -3,6 +3,12 @@
 Changes specific to this fork. Upstream changes are listed in [CHANGELOG.md](CHANGELOG.md);
 the automatic upstream sync brings them in (see [fork/README.md](fork/README.md)).
 
+## [1.2.0] - 2026-11-22
+
+### Added
+
+- Claude Code (MCP) bridge: connect Claude Code, or any MCP client on the same computer, to the open world. The module ships a bundled MCP server (`mcp/foundry-mcp.mjs`); the GM's browser connects to it over `ws://127.0.0.1` with a shared token and runs Simulacrum's tools for it, plus `get_world_context`, `foundry_status` and paging for large results. Set it up under Configure Settings → Simulacrum → Connect Claude Code. See [mcp/README.md](mcp/README.md).
+
 ## [1.1.4] - 2026-11-12
 
 ### Fixed

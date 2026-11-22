@@ -25,6 +25,8 @@ try {
 }
 import { InteractionLogDownloader } from './core/interaction-logger.js';
 import { assetIndexService } from './core/asset-index-service.js';
+import { mcpBridge, registerMcpBridgeSettings } from './mcp/mcp-bridge.js';
+import { McpBridgeConfig } from './mcp/mcp-bridge-config.js';
 import { modelService } from './core/model-service.js';
 
 const MODULE_ID = 'simulacrum';
@@ -178,6 +180,9 @@ async function initializeForGMUser() {
   const { interactionLogger } = await import('./core/interaction-logger.js');
   await interactionLogger.initialize();
 
+  // Claude Code (MCP) bridge: connects out to the local MCP server when enabled
+  mcpBridge.start();
+
   // Initialize asset index service in background (non-blocking)
   // Search tool will await the index if called before it's ready
   assetIndexService.initialize();
@@ -286,6 +291,17 @@ function registerAPISettings() {
     config: true,
     type: Number,
     default: 100,
+    restricted: true,
+  });
+
+  // Claude Code (MCP) bridge settings window and its (hidden) settings
+  registerMcpBridgeSettings();
+  game.settings.registerMenu(MODULE_ID, 'mcpBridgeMenu', {
+    name: 'Claude Code (MCP)',
+    label: 'Connect Claude Code',
+    hint: "Let Claude Code or another MCP client on this computer use Simulacrum's tools on this world.",
+    icon: 'fa-solid fa-plug',
+    type: McpBridgeConfig,
     restricted: true,
   });
 

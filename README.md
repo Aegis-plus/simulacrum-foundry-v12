@@ -108,6 +108,12 @@ into this fork, runs the test suite, and publishes a new package. Foundry then o
 If an upstream change conflicts with the v12 changes, nothing is published and an issue is opened instead.
 Details are in [fork/README.md](fork/README.md); fork-specific changes are listed in [CHANGELOG-v12.md](CHANGELOG-v12.md).
 
+## Use with Claude Code (MCP)
+
+This build includes an MCP server, so [Claude Code](https://claude.com/claude-code) (or another MCP client) on the same computer can work on your world directly with Simulacrum's tools: search, read, create and update documents, inspect schemas, browse compendiums, and run macros.
+
+In Foundry go to **Configure Settings → Simulacrum → Connect Claude Code**, enable the bridge, and run the command it shows. Full setup, tool list and safety notes: [mcp/README.md](mcp/README.md).
+
 ## Configuration
 
 1. Enable the module in your world

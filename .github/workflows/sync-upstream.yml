@@ -88,6 +88,16 @@ jobs:
             echo "::endgroup::"
           done
 
+      - name: Test the Claude Code MCP server
+        if: steps.plan.outputs.publish == 'true'
+        working-directory: mcp
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          # The bundle is committed so it ships without a build step; it must match the source.
+          git diff --exit-code -- foundry-mcp.mjs || { echo "::error::mcp/foundry-mcp.mjs is out of date; run 'npm run build' in mcp/ and commit it"; exit 1; }
+          npm test
+
       - name: Commit sync
         if: steps.sync.outputs.status == 'synced' || steps.sync.outputs.status == 'no-changes'
         env:
@@ -115,6 +125,7 @@ jobs:
         run: |
           rm -rf dist
           npm run -s package:module
+          bash tools/fork/package-extras.sh "dist/simulacrum-${{ steps.plan.outputs.version }}.zip"
           echo "zip=dist/simulacrum-${{ steps.plan.outputs.version }}.zip" >> "$GITHUB_OUTPUT"
 
       - name: Publish package to release branch
