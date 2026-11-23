@@ -47,6 +47,8 @@ Check it by asking Claude Code: _"Call get_world_context and tell me about my Fo
 
 ## Tools
 
+### World and documents
+
 | Tool                                                       | What it does                                                                          |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `foundry_status`                                           | Whether a world is connected; works even when it is not                               |
@@ -61,10 +63,54 @@ Check it by asking Claude Code: _"Call get_world_context and tell me about my Fo
 
 Macros that define a Simulacrum tool (see the main README) are offered too.
 
+### Running the game
+
+These also work in Simulacrum's own sidebar chat. The D&D 5e ones use the dnd5e system's own rolls
+and rules (proficiency, advantage, resistances, spell slots).
+
+| Tool               | What it does                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `roll_dice`        | Roll any formula into chat: public, GM-only, blind or self                                                                                              |
+| `roll_check`       | 5e skill/ability/tool checks, saves, death saves and concentration, with advantage and a DC; one actor or a group                                       |
+| `roll_initiative`  | Initiative for NPCs, everyone, the unrolled, or named combatants                                                                                        |
+| `use_item`         | Use a weapon, spell or feature: post its card, attack (hit/miss against target AC), roll damage, or attack and damage in one go, optionally applying it |
+| `roll_table`       | Draw from a roll table                                                                                                                                  |
+| `post_message`     | Narrate, speak in character as an actor or token, emote, or post out of character; can whisper                                                          |
+| `read_chat`        | Recent chat including who spoke and roll totals                                                                                                         |
+| `show_handout`     | Show a journal entry/page or an image to players                                                                                                        |
+| `combat_start`     | Start an encounter from tokens (all, hostile, a list), roll NPC initiative, begin round 1                                                               |
+| `combat_status`    | Round, whose turn, order with HP and conditions                                                                                                         |
+| `combat_control`   | Next/previous turn or round, start, end, add/remove combatants, set initiative, mark defeated                                                           |
+| `list_tokens`      | Tokens with grid position, disposition, HP, size, conditions, hidden state                                                                              |
+| `move_token`       | Move to a square, next to a token, or N feet in a direction                                                                                             |
+| `place_token`      | Spawn actors (one or many, hidden or not; compendium actors are imported)                                                                               |
+| `remove_token`     | Delete tokens (marked destructive)                                                                                                                      |
+| `set_token_hidden` | Hide or reveal tokens                                                                                                                                   |
+| `get_distance`     | Distance between tokens, 5e style (edge to edge, diagonals as one square)                                                                               |
+| `activate_scene`   | Move everyone to a scene, or just view it                                                                                                               |
+| `pan_to`           | Ping a token or square and pull everyone's view there                                                                                                   |
+| `toggle_door`      | List doors, or open/close/lock/unlock one                                                                                                               |
+| `get_actor_status` | Compact sheet: HP, AC, abilities and saves, slots, resources, conditions, items, currency, XP                                                           |
+| `apply_damage`     | Typed damage (resistances apply), healing or temp HP; NPCs at 0 HP are marked defeated                                                                  |
+| `set_condition`    | Add/remove conditions; set exhaustion                                                                                                                   |
+| `rest`             | 5e short or long rest                                                                                                                                   |
+| `award`            | XP and currency to the party, each or split, announced in chat                                                                                          |
+| `advance_time`     | Move the world clock forward, or read it                                                                                                                |
+| `play_audio`       | List, play or stop playlists and sounds, or play a file                                                                                                 |
+
+Positions are grid squares counted from the map's top-left square (`col`, `row`). Names that match
+several things (three tokens called "Goblin") return an error listing their ids, so nothing is
+done to the wrong one.
+
+**Solo play tip:** start a Claude Code session with something like _"You are the Game Master for my
+solo campaign. My character is Brenna. Call get_world_context, roll every die in Foundry, run the
+monsters' turns, never reveal what my character hasn't discovered, and keep a Campaign Log journal
+updated."_ Allow the read-only tools permanently in Claude Code so you are only asked about actions.
+
 ## Safety
 
 - Claude Code asks before using tools, unless you allow them. Read-only tools are marked as such;
-  tools that change the world are marked destructive.
+  tools that delete things are marked destructive.
 - Tools you set to **Never** in Simulacrum's **Tool Permissions** are not offered to Claude Code, and
   are refused if called.
 - `run_javascript` and `execute_macro` run code in your browser with GM rights. Approve them with care.

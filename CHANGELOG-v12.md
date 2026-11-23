@@ -3,6 +3,16 @@
 Changes specific to this fork. Upstream changes are listed in [CHANGELOG.md](CHANGELOG.md);
 the automatic upstream sync brings them in (see [fork/README.md](fork/README.md)).
 
+## [1.3.0] - 2026-11-23
+
+### Added
+
+- 27 table tools for running a game, in Simulacrum's chat and over the Claude Code (MCP) bridge: `roll_dice`, `roll_check`, `roll_initiative`, `use_item`, `roll_table`, `post_message`, `read_chat`, `show_handout`, `combat_start`, `combat_status`, `combat_control`, `list_tokens`, `move_token`, `place_token`, `remove_token`, `set_token_hidden`, `get_distance`, `activate_scene`, `pan_to`, `toggle_door`, `get_actor_status`, `apply_damage`, `set_condition`, `rest`, `award`, `advance_time`, `play_audio`. The D&D 5e ones call dnd5e 3.x's own rolls and rules. See [mcp/README.md](mcp/README.md#running-the-game).
+
+### Fixed
+
+- MCP bridge: if Foundry was opened before Claude Code, the bridge could stay on "connecting" after a failed first attempt and never connect. It now retries on connection errors, times out stuck attempts, and retries every 2 seconds while waiting. `foundry_status` also waits a few seconds for Foundry right after startup.
+
 ## [1.2.0] - 2026-11-22
 
 ### Added

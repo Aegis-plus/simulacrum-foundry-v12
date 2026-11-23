@@ -35,7 +35,8 @@ const UI_ONLY_PARAMS = ['justification', 'response'];
 const OUTPUT_LIMIT_CHARS = 40000;
 const PREVIEW_LINES = 60;
 const MAX_STORED_OUTPUTS = 20;
-const RETRY_DELAYS_MS = [1000, 2000, 3000, 5000];
+const RETRY_DELAYS_MS = [1000, 2000];
+const CONNECT_TIMEOUT_MS = 5000;
 
 const logger = createLogger('McpBridge');
 
@@ -81,21 +82,21 @@ function stripUiParams(params) {
   return inputSchema;
 }
 
-function annotationsFor(name, destructive) {
-  if (READ_ONLY_TOOLS.has(name)) return { openWorldHint: false, readOnlyHint: true };
+function annotationsFor(name, destructive, readOnly = false) {
+  if (readOnly || READ_ONLY_TOOLS.has(name)) return { openWorldHint: false, readOnlyHint: true };
   if (destructive) return { openWorldHint: false, readOnlyHint: false, destructiveHint: true };
   return { openWorldHint: false };
 }
 
 /** Turn a Simulacrum (OpenAI-style) tool schema into an MCP tool definition. */
-export function toMcpTool(schema, { destructive = false } = {}) {
+export function toMcpTool(schema, { destructive = false, readOnly = false } = {}) {
   const fn = schema.function ?? schema;
   const params = fn.parameters && typeof fn.parameters === 'object' ? fn.parameters : {};
   return {
     name: fn.name,
     description: fn.description ?? '',
     inputSchema: stripUiParams(params),
-    annotations: annotationsFor(fn.name, destructive),
+    annotations: annotationsFor(fn.name, destructive, readOnly),
   };
 }
 
@@ -222,20 +223,41 @@ class McpBridge {
       return;
     }
     this.socket = socket;
-    socket.onopen = () => socket.send(JSON.stringify(this._hello()));
-    socket.onmessage = event => this._onMessage(socket, event.data);
-    socket.onerror = () => {};
-    socket.onclose = () => {
-      if (this.socket !== socket) return;
-      this.socket = null;
-      if (this.state === 'connected') {
-        ui.notifications?.info('Simulacrum: Claude Code disconnected.');
-      }
-      if (this.state !== 'rejected') {
-        this._setState('waiting', this.lastError);
-        this._scheduleRetry();
-      }
+    // Give up on an attempt that neither opens nor fails (e.g. a filtered port).
+    const connectTimer = setTimeout(() => this._onSocketGone(socket, true), CONNECT_TIMEOUT_MS);
+    socket.onopen = () => {
+      clearTimeout(connectTimer);
+      socket.send(JSON.stringify(this._hello()));
     };
+    socket.onmessage = event => this._onMessage(socket, event.data);
+    // Browsers fire "close" after a failed connection; some runtimes only fire "error".
+    socket.onerror = () => {
+      clearTimeout(connectTimer);
+      if (socket.readyState !== 1) this._onSocketGone(socket, true);
+    };
+    socket.onclose = () => {
+      clearTimeout(connectTimer);
+      this._onSocketGone(socket, false);
+    };
+  }
+
+  /** Handle a socket that closed or never opened; safe to call more than once. */
+  _onSocketGone(socket, closeIt) {
+    if (this.socket !== socket) return;
+    this.socket = null;
+    if (closeIt) {
+      socket.onclose = null;
+      try {
+        socket.close();
+      } catch {
+        /* already closed */
+      }
+    }
+    if (this.state === 'connected') ui.notifications?.info('Simulacrum: Claude Code disconnected.');
+    if (this.state !== 'rejected') {
+      this._setState('waiting', this.lastError);
+      this._scheduleRetry();
+    }
   }
 
   _scheduleRetry() {
@@ -318,7 +340,12 @@ class McpBridge {
       const destructive = toolPermissionManager.isDestructive(name);
       if (destructive && toolPermissionManager.getPermission(name) === PermissionState.DENY)
         continue;
-      tools.push(toMcpTool(schema, { destructive }));
+      const tool = toolRegistry.getTool(name);
+      const flags = {
+        destructive: destructive || tool?.destructive === true,
+        readOnly: tool?.readOnly === true,
+      };
+      tools.push(toMcpTool(schema, flags));
     }
     return [...BRIDGE_TOOLS, ...tools];
   }

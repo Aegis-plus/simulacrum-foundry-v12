@@ -112,6 +112,8 @@ Details are in [fork/README.md](fork/README.md); fork-specific changes are liste
 
 This build includes an MCP server, so [Claude Code](https://claude.com/claude-code) (or another MCP client) on the same computer can work on your world directly with Simulacrum's tools: search, read, create and update documents, inspect schemas, browse compendiums, and run macros.
 
+It also adds tools for running the game itself: dice and 5e checks, attacks and spells, combat, tokens, conditions, rests, rewards, chat narration, time and audio. That makes solo play with Claude as the GM possible.
+
 In Foundry go to **Configure Settings → Simulacrum → Connect Claude Code**, enable the bridge, and run the command it shows. Full setup, tool list and safety notes: [mcp/README.md](mcp/README.md).
 
 ## Configuration

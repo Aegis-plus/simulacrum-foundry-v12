@@ -78,6 +78,8 @@ const { toolRegistry } = await import('../../scripts/core/tool-registry.js');
 const { toolPermissionManager } = await import('../../scripts/core/tool-permission-manager.js');
 const { mcpBridge } = await import('../../scripts/mcp/mcp-bridge.js');
 toolRegistry.registerDefaults();
+const { registerAllTableTools } = await import('../../scripts/tools/table/index.js');
+registerAllTableTools(toolRegistry);
 
 let client;
 let listChanged = 0;
@@ -143,6 +145,27 @@ test('Foundry tools are listed with UI-only parameters removed', async () => {
   assert.ok(!(create.inputSchema.required ?? []).includes('justification'));
   assert.equal(create.annotations.destructiveHint, true);
   assert.equal(tools.find(t => t.name === 'read_document').annotations.readOnlyHint, true);
+});
+
+test('table tools are offered with read-only and destructive hints', async () => {
+  const { tools } = await client.listTools();
+  const byName = new Map(tools.map(t => [t.name, t]));
+  for (const name of [
+    'roll_dice',
+    'roll_check',
+    'use_item',
+    'combat_start',
+    'move_token',
+    'apply_damage',
+    'play_audio',
+  ]) {
+    assert.ok(byName.has(name), `missing ${name}`);
+  }
+  assert.equal(byName.get('list_tokens').annotations.readOnlyHint, true);
+  assert.equal(byName.get('read_chat').annotations.readOnlyHint, true);
+  assert.equal(byName.get('remove_token').annotations.destructiveHint, true);
+  assert.equal(byName.get('roll_dice').annotations.readOnlyHint, undefined);
+  assert.ok(!('justification' in byName.get('roll_check').inputSchema.properties));
 });
 
 test('foundry_status and get_world_context describe the connected world', async () => {
@@ -232,4 +255,37 @@ test('a wrong token is rejected and nothing is exposed', async () => {
   settings.set('simulacrum.mcpBridgeToken', TOKEN);
   mcpBridge.restart();
   assert.ok(await until(() => mcpBridge.state === 'connected'), `state: ${mcpBridge.state}`);
+});
+
+test('Foundry opened before Claude Code connects once the server starts', async () => {
+  const port = PORT + 1;
+  mcpBridge.stop();
+  settings.set('simulacrum.mcpBridgePort', port);
+  mcpBridge.restart();
+  assert.ok(await until(() => mcpBridge.state === 'waiting', 4000), `state: ${mcpBridge.state}`);
+  await new Promise(r => setTimeout(r, 1500)); // a few failed attempts while no server exists
+
+  const late = new Client({ name: 'late', version: '1.0.0' });
+  await late.connect(
+    new StdioClientTransport({
+      command: process.execPath,
+      args: [SERVER],
+      env: { ...process.env, FOUNDRY_MCP_TOKEN: TOKEN, FOUNDRY_MCP_PORT: String(port) },
+      stderr: 'ignore',
+    })
+  );
+  try {
+    assert.ok(
+      await until(() => mcpBridge.state === 'connected', 6000),
+      `state: ${mcpBridge.state}`
+    );
+    const status = await late.callTool({ name: 'foundry_status', arguments: {} });
+    assert.match(status.content[0].text, /World: Cragmaw Hideout/);
+  } finally {
+    await late.close();
+    mcpBridge.stop();
+    settings.set('simulacrum.mcpBridgePort', PORT);
+    mcpBridge.restart();
+    await until(() => mcpBridge.state === 'connected');
+  }
 });

@@ -27,6 +27,7 @@ import { InteractionLogDownloader } from './core/interaction-logger.js';
 import { assetIndexService } from './core/asset-index-service.js';
 import { mcpBridge, registerMcpBridgeSettings } from './mcp/mcp-bridge.js';
 import { McpBridgeConfig } from './mcp/mcp-bridge-config.js';
+import { registerAllTableTools } from './tools/table/index.js';
 import { modelService } from './core/model-service.js';
 
 const MODULE_ID = 'simulacrum';
@@ -366,6 +367,9 @@ Hooks.once('init', async () => {
 
   // Initialize core systems
   SimulacrumCore.init();
+
+  // Table tools (dice, chat, combat, tokens, scenes, characters, time, audio)
+  registerAllTableTools(toolRegistry);
 
   // Expose core on window for UI components that reference it
   if (typeof window !== 'undefined') {

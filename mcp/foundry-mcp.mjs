@@ -20961,6 +20961,7 @@ function createMcpServer(bridge2) {
   server2.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
     if (name === STATUS_TOOL.name) {
+      if (!bridge2.connected && bridge2.wss) await bridge2.waitForConnection(CALL_WAIT_MS);
       return { content: [{ type: "text", text: describeStatus(status()) }] };
     }
     if (!bridge2.connected) await bridge2.waitForConnection(CALL_WAIT_MS);

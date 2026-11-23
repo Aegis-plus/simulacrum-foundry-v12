@@ -98,6 +98,8 @@ export function createMcpServer(bridge) {
   server.setRequestHandler(CallToolRequestSchema, async request => {
     const { name, arguments: args } = request.params;
     if (name === STATUS_TOOL.name) {
+      // Right after startup Foundry may still be reconnecting; give it a moment.
+      if (!bridge.connected && bridge.wss) await bridge.waitForConnection(CALL_WAIT_MS);
       return { content: [{ type: 'text', text: describeStatus(status()) }] };
     }
     if (!bridge.connected) await bridge.waitForConnection(CALL_WAIT_MS);
